@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather</title>
+    <link rel="stylesheet" type="text/css" href="webjars/bootstrap/4.0.0-2/css/bootstrap.min.css" />
+
+</head>
+<body>
+<div class="container">
+    <h1>Weather forecast</h1>
+
+    <div>
+<!--        Replace by forecast uri variable-->
+        <div th:each="weather : ${daily}" class="col-md-4 my-1">
+                <p th:text= "${daily.description}"></p>
+
+        </div>
+        </div>
+    <div></div>
+    </div>
+    <script type="text/javascript" src="webjars/bootstrap/4.0.0-2/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>
+
+
