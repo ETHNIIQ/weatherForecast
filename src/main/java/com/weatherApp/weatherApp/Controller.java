@@ -4,6 +4,8 @@ import com.weatherApp.weatherApp.Client.GoogleClient;
 import com.weatherApp.weatherApp.Client.WeatherClient;
 import feign.Feign;
 import feign.codec.Encoder;
+import feign.gson.GsonDecoder;
+import feign.gson.GsonEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -80,34 +82,43 @@ public class Controller {
         * 1- Use google Api to retrieve long lat from city name only
         * or to convert city to country and follow option 1
         * */
-        String myKey="AIzaSyDezbSehAw5lkTecreu0Nk2bosYXKrhR9Y";
-//        String URL=geolocation+"json?address=\""+cityName+"\"&key=\""+myKey+"\"";
-        String URL="https://maps.googleapis.com/maps/api/geocode/json?address=paris&key=AIzaSyDezbSehAw5lkTecreu0Nk2bosYXKrhR9Y";
+        String key="AIzaSyDezbSehAw5lkTecreu0Nk2bosYXKrhR9Y";
+        String URL=geolocation+"?address="+cityName+"&key="+key;
+//        String URL="https://maps.googleapis.com/maps/api/geocode/json?address=paris&key=AIzaSyDezbSehAw5lkTecreu0Nk2bosYXKrhR9Y";
+//        Build a feign client instance
         GoogleClient api = Feign.builder()
+//                .mapAndDecode((response, type) -> jsopUnwrap(response, type), new GsonDecoder())
+          /**      solution to problem no encode found for linked hashmap **/
+                .encoder(new GsonEncoder())
+                .decoder(new GsonDecoder())
                 .target(GoogleClient.class, URL);
 //        request
-        String geolocContent= api.getGeoloc(cityName,myKey);
+        Object geolocContent= api.getGeoloc(cityName,key);
+        System.out.println(geolocContent);
         //just retrieve the country that I will use bellow in the locale
 
 
         //OPTION 1 :associate country to local code for Api weather request
         Map<String,Locale> map = new HashMap<String,Locale>();
         Locale[] localeIsoList =Locale.getAvailableLocales();
-        String[] localIsoSList = Locale.getISOCountries();
         for (Locale locale : localeIsoList) {
             map.put(locale.getDisplayCountry(), locale);
-
+            System.out.println(locale.getDisplayCountry()+" local code is "+locale);
         }
 
         /*
         Option 2: for map all value and retrieve Locale
         *Map<String,String> mapbis = new HashMap<String,String>();
+        String[] localIsoSList = Locale.getISOCountries();
         for (String locale : localIsoSList) {
             Locale localvar = new Locale("en", locale);
             mapbis.put(localvar.getDisplayCountry(), locale);
         }
         * */
+        /**GET the locale code from given country value inside the map
+         * 1-should add ignore case **/
         Locale LocaleISO=map.get(country);
+        System.out.println(LocaleISO);
 
         String redirect="forecast?lat=\""+37.39+"\"&lon=\""+-122.08+"\"&appid=330179169034de0ad89d684b4712ba32";
 
