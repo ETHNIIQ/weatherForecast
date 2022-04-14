@@ -120,10 +120,11 @@ public class Controller {
         Locale LocaleISO=map.get(country);
         System.out.println(LocaleISO);
 
-        String redirect="forecast?lat=\""+37.39+"\"&lon=\""+-122.08+"\"&appid=330179169034de0ad89d684b4712ba32";
+        /**Make a call to get forecast DTO with the data I got lon lat from google API */
+        service.getForecastDto("lat","lon","appid");
 
-//For mvc
-        return "redirect:"+redirect;
+        /**Make this app return the forecast or other call API in weatherClient*/
+        return "success ";
 
     }
 }
